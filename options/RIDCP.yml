@@ -1,0 +1,144 @@
+# general settings
+name: vq_weight_dehaze_trained_on_ours
+model_type: VQDehazeModel 
+scale: &upscale 1
+num_gpu: 4 # set num_gpu: 0 for cpu mode
+manual_seed: 0
+
+# dataset and data loader settings
+datasets:
+  train:
+    name: General_Image_Train
+    type: HazeOnlineDataset  
+    dataroot_gt: ../dataset/OTS/clear_images_no_haze_no_dark
+    dataroot_depth: ../dataset/OTS/depth
+    beta_range: [0.3, 1.5]
+    A_range: [0.25, 1.0]
+    color_p: 1.0
+    color_range: [-0.025, 0.025]
+    io_backend:
+      type: disk
+ 
+    gt_size: 256
+    use_resize_crop: true
+    use_flip: true
+    use_rot: false
+
+    # data loader
+    use_shuffle: true
+    batch_size_per_gpu: &bsz 4 
+    num_worker_per_gpu: *bsz 
+    dataset_enlarge_ratio: 1
+
+    prefetch_mode: cpu
+    num_prefetch_queue: *bsz
+
+  val:
+    name: General_Image_Valid
+    type: PairedImageDataset
+    dataroot_gt: ../dataset/SOTS/SOTS/outdoor/clear
+    dataroot_lq: ../dataset/SOTS/SOTS/outdoor/hazy
+    io_backend:
+      type: disk
+
+# network structures
+network_g:
+  type: VQWeightDehazeNet 
+  gt_resolution: 256
+  norm_type: 'gn'
+  act_type: 'silu'
+  scale_factor: *upscale
+  codebook_params:
+    - [64, 1024, 512]
+
+  LQ_stage: true
+  use_weight: false
+  weight_alpha: -1.0
+  frozen_module_keywords: ['quantize', 'decoder_group', 'after_quant_group', 'out_conv']
+
+network_d:
+  type: UNetDiscriminatorSN 
+  num_in_ch: 512
+
+# path
+path:
+  pretrain_network_hq: ./experiments/vq_codebook_pretrain_SR_8x_retrain/models/net_g_latest.pth
+  pretrain_network_g: 
+  pretrain_network_d: ~
+  strict_load: false 
+  # resume_state: ~
+
+# training settings
+train:
+  optim_g:
+    type: Adam
+    lr: !!float 1e-4
+    weight_decay: 0
+    betas: [0.9, 0.99]
+  optim_d:
+    type: Adam
+    lr: !!float 4e-4
+    weight_decay: 0
+    betas: [0.9, 0.99]
+
+  scheduler:
+    type: MultiStepLR
+    milestones: [5000, 10000, 15000, 20000, 250000, 300000, 350000]
+    gamma: 1 
+
+  total_iter: 45000
+  warmup_iter: -1  # no warm up
+
+  # losses
+  pixel_opt:
+    type: L1Loss
+    loss_weight: 1.0 
+    reduction: mean
+
+  perceptual_opt:
+    type: LPIPSLoss
+    loss_weight: !!float 1.0 
+    
+  gan_opt:
+    type: GANLoss
+    gan_type: hinge
+    real_label_val: 1.0
+    fake_label_val: 0.0
+    loss_weight: 0.1
+
+  codebook_opt:
+    loss_weight: 1.0
+  
+  semantic_opt:
+    loss_weight: 0.1 
+
+
+  net_d_iters: 1
+  net_d_init_iters: !!float 0 
+
+# validation settings·
+val:
+  val_freq: !!float 80000
+  save_img: true
+
+  key_metric: psnr
+  metrics:
+    psnr: # metric name, can be arbitrary
+      type: psnr 
+      crop_border: 4
+      test_y_channel: true
+    ssim:
+      type: ssim 
+      crop_border: 4
+      test_y_channel: true
+    lpips:
+      type: lpips 
+      better: lower
+
+# logging settings
+logger:
+  print_freq: 100
+  save_checkpoint_freq: !!float 1e3
+  save_latest_freq: !!float 5e2
+  show_tf_imgs_freq: !!float 1e2
+  use_tb_logger: true
