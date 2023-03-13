@@ -15,7 +15,6 @@ version.py
 
 # ignored files with suffix
 *.html
-*.gif
 *.pth
 *.zip
 
