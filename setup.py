@@ -122,7 +122,7 @@ if __name__ == '__main__':
                 name='deform_conv_ext',
                 module='basicsr.ops.dcn',
                 sources=['src/deform_conv_ext.cpp'],
-                sources_cuda=['src/deform_conv_cuda.cpp', 'src/deform_conv_cuda_kernel.cu']),
+                sources_cuda=['src/deform_conv_cuda.cpp', 'src/deform_conv_cuda_kernel.cu'])
         ]
     else:
         ext_modules = []

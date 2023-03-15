@@ -3,7 +3,7 @@ datasets/*
 experiments*
 experiments/*
 # results/*
-tb_logger*/*
+tb_logger*
 pretrained_models
 wandb/*
 tmp*/*
