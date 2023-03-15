@@ -8,7 +8,7 @@ from basicsr.utils.registry import ARCH_REGISTRY
 from basicsr.ops.dcn import ModulatedDeformConvPack, modulated_deform_conv
 
 from .network_swinir import RSTB
-from .fema_utils import ResBlock, CombineQuantBlock 
+from .ridcp_utils import ResBlock, CombineQuantBlock 
 from .vgg_arch import VGGFeatureExtractor
 
 
@@ -309,7 +309,6 @@ class VQWeightDehazeNet(nn.Module):
                  norm_type='gn',
                  act_type='silu',
                  use_quantize=True,
-                 scale_factor=4,
                  use_semantic_loss=False,
                  use_residual=True,
                  only_residual=False,
@@ -329,7 +328,6 @@ class VQWeightDehazeNet(nn.Module):
         self.in_channel = in_channel
         self.gt_res = gt_resolution
         self.LQ_stage = LQ_stage
-        self.scale_factor = scale_factor if LQ_stage else 1
         self.use_residual = use_residual
         self.only_residual = only_residual
         self.use_weight = use_weight
@@ -351,7 +349,7 @@ class VQWeightDehazeNet(nn.Module):
         self.multiscale_encoder = MultiScaleEncoder(
                                 in_channel,     
                                 self.max_depth,  
-                                self.gt_res // self.scale_factor, 
+                                self.gt_res, 
                                 channel_query_dict,
                                 norm_type, act_type, LQ_stage
                             )
@@ -359,7 +357,7 @@ class VQWeightDehazeNet(nn.Module):
             self.multiscale_decoder = MultiScaleDecoder(
                                 in_channel,     
                                 self.max_depth,  
-                                self.gt_res // self.scale_factor, 
+                                self.gt_res, 
                                 channel_query_dict,
                                 norm_type, act_type, only_residual, use_warp=self.use_warp
             )
@@ -417,7 +415,7 @@ class VQWeightDehazeNet(nn.Module):
         # if self.training:
         #     for p in self.multiscale_encoder.parameters():
         #         p.requires_grad = True
-        enc_feats = self.multiscale_encoder(input.detach())
+        enc_feats = self.multiscale_encoder(input)
 
         if self.use_semantic_loss:
             with torch.no_grad():
@@ -508,8 +506,8 @@ class VQWeightDehazeNet(nn.Module):
         Modified from: https://github.com/xinntao/Real-ESRGAN/blob/master/realesrgan/utils.py
         """
         batch, channel, height, width = input.shape
-        output_height = height * self.scale_factor
-        output_width = width * self.scale_factor
+        output_height = height
+        output_width = width
         output_shape = (batch, channel, output_height, output_width)
 
         # start with black image
@@ -545,16 +543,16 @@ class VQWeightDehazeNet(nn.Module):
                 output_tile = self.test(input_tile)
 
                 # output tile area on total image
-                output_start_x = input_start_x * self.scale_factor
-                output_end_x = input_end_x * self.scale_factor
-                output_start_y = input_start_y * self.scale_factor
-                output_end_y = input_end_y * self.scale_factor
+                output_start_x = input_start_x
+                output_end_x = input_end_x
+                output_start_y = input_start_y
+                output_end_y = input_end_y
 
                 # output tile area without padding
-                output_start_x_tile = (input_start_x - input_start_x_pad) * self.scale_factor
-                output_end_x_tile = output_start_x_tile + input_tile_width * self.scale_factor
-                output_start_y_tile = (input_start_y - input_start_y_pad) * self.scale_factor
-                output_end_y_tile = output_start_y_tile + input_tile_height * self.scale_factor
+                output_start_x_tile = (input_start_x - input_start_x_pad)
+                output_end_x_tile = output_start_x_tile + input_tile_width
+                output_start_y_tile = (input_start_y - input_start_y_pad)
+                output_end_y_tile = output_start_y_tile + input_tile_height
 
                 # put tile into output image
                 output[:, :, output_start_y:output_end_y,
@@ -568,7 +566,7 @@ class VQWeightDehazeNet(nn.Module):
         self.use_semantic_loss = False
 
         # padding to multiple of window_size * 8
-        wsz = 8 // self.scale_factor * 8 
+        wsz = 32
         _, _, h_old, w_old = input.shape
         h_pad = (h_old // wsz + 1) * wsz - h_old
         w_pad = (w_old // wsz + 1) * wsz - w_old
@@ -578,9 +576,9 @@ class VQWeightDehazeNet(nn.Module):
         output_vq, output, _, _, _, after_quant, index = self.encode_and_decode(input, None, None, weight_alpha=weight_alpha)
 
         if output is not None:
-            output = output[..., :h_old * self.scale_factor, :w_old * self.scale_factor]
+            output = output[..., :h_old, :w_old]
         if output_vq is not None:
-            output_vq = output_vq[..., :h_old * self.scale_factor, :w_old * self.scale_factor]
+            output_vq = output_vq[..., :h_old, :w_old]
 
         self.use_semantic_loss = org_use_semantic_loss 
         return output, index
