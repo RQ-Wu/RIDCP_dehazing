@@ -72,3 +72,10 @@ If you find our repo useful for your research, please cite us:
     year={2023}
 }
 ```
+
+## License
+Licensed under a [Creative Commons Attribution-NonCommercial 4.0 International](https://creativecommons.org/licenses/by-nc/4.0/) for Non-commercial use only.
+Any commercial use should get formal permission first.
+
+## Acknowledgement
+This repository is maintained by [Ruiqi Wu](https://rq-wu.github.io/).
