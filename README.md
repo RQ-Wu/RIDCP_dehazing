@@ -13,7 +13,7 @@ This is the official PyTorch codes for the paper.
 
 ## Demo
 
-<img src="figs/mountain.gif" width="390px"/> &nbsp; &nbsp; &nbsp; &nbsp; <img src="figs/car.gif" width="390px"/>
+<img src="https://github.com/RQ-Wu/RIDCP/blob/master/figs/car.gif" width="390px"/> &nbsp; &nbsp; &nbsp; &nbsp; <img src="https://github.com/RQ-Wu/RIDCP/blob/master/figs/mountain.gif" width="390px"/>
 
 ## Dependencies and Installation
 
