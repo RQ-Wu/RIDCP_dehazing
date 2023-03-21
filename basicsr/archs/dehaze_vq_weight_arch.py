@@ -270,7 +270,6 @@ class MultiScaleDecoder(nn.Module):
         res =  input_res // (2 ** max_depth)
         for i in range(max_depth):
             in_channel, out_channel = channel_query_dict[res], channel_query_dict[res * 2]
-            print(i, out_channel)
             self.upsampler.append(nn.Sequential(
                 nn.Upsample(scale_factor=2),
                 nn.Conv2d(in_channel, out_channel, 3, stride=1, padding=1),

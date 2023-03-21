@@ -18,6 +18,8 @@ def main():
     parser.add_argument('-i', '--input', type=str, default='inputs', help='Input image or folder')
     parser.add_argument('-w', '--weight', type=str, default=None, help='path for model weights')
     parser.add_argument('-o', '--output', type=str, default='results', help='Output folder')
+    parser.add_argument('--use_weight', action="store_true")
+    parser.add_argument('--alpha', type=float, default=1.0, help='value of alpha')
     parser.add_argument('--suffix', type=str, default='', help='Suffix of the restored image')
     parser.add_argument('--max_size', type=int, default=800, help='Max image size for whole image inference, otherwise use tiled_test')
     args = parser.parse_args()
@@ -26,8 +28,8 @@ def main():
     weight_path = args.weight
     
     # set up the model
-    sr_model = VQWeightDehazeNet(codebook_params=[[64, 1024, 512]], LQ_stage=True, use_weight=False, weight_alpha=-21.25).to(device)
-    sr_model.load_state_dict(torch.load(weight_path)['params'], strict=True)
+    sr_model = VQWeightDehazeNet(codebook_params=[[64, 1024, 512]], LQ_stage=True, use_weight=args.use_weight, weight_alpha=args.alpha).to(device)
+    sr_model.load_state_dict(torch.load(weight_path)['params'], strict=False)
     sr_model.eval()
     
     os.makedirs(args.output, exist_ok=True)

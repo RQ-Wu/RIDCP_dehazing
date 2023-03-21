@@ -43,7 +43,7 @@ TBD
 ### Quick demo
 Run demos to process the images in dir `./examples/` by following commands:
 ```
-python inference_ridcp.py -i examples -w pretrained_models/pretrained_RIDCP.pth
+python inference_ridcp.py -i examples -w pretrained_models/pretrained_RIDCP.pth -o results
 ```
 
 ### Train RIDCP
