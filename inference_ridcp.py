@@ -21,7 +21,7 @@ def main():
     parser.add_argument('--use_weight', action="store_true")
     parser.add_argument('--alpha', type=float, default=1.0, help='value of alpha')
     parser.add_argument('--suffix', type=str, default='', help='Suffix of the restored image')
-    parser.add_argument('--max_size', type=int, default=800, help='Max image size for whole image inference, otherwise use tiled_test')
+    parser.add_argument('--max_size', type=int, default=1500, help='Max image size for whole image inference, otherwise use tiled_test')
     args = parser.parse_args()
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu') 

@@ -4,7 +4,6 @@ experiments*
 experiments/*
 # results/*
 tb_logger*
-result*
 pretrained_models
 wandb/*
 tmp*/*
