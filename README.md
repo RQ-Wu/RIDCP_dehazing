@@ -8,7 +8,7 @@ This is the official PyTorch codes for the paper.
 
 ![framework_img](figs/framework_overview.png)
 
-[Arxiv Paper (TBD)]  [中文版 (TBD)] [Project (TBD)]  [[Dataset](https://pan.baidu.com/s/1oX3AZkVlEa7S1sSO12r47Q) (pwd:qqqo)]
+[Arxiv Paper (TBD)]  [中文版 (TBD)] [[Project](https://rq-wu.github.io/projects/RIDCP/index.html)]  [[Dataset](https://pan.baidu.com/s/1oX3AZkVlEa7S1sSO12r47Q) (pwd:qqqo)]
 
 ### :rocket: Highlights:
 - **SOTA performance**: The proposed RIDCP achieves superior performance in both qualitative and quantitative comparisons with SOTA methods.
