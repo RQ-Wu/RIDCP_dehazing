@@ -1,4 +1,4 @@
-# <p align=center> `RIDCP: Revitalizing Real Image Dehazing via High-Quality Codebook Priors` :fire: `(CVPR2023)` :fire:</p>
+# <p align=center> :fire: `RIDCP: Revitalizing Real Image Dehazing via High-Quality Codebook Priors (CVPR2023)`</p>
 
 ![Python 3.8](https://img.shields.io/badge/python-3.8-g) ![pytorch 1.12.0](https://img.shields.io/badge/pytorch-1.12.0-blue.svg)
 
