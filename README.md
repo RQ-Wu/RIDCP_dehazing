@@ -37,7 +37,7 @@ cd RIDCP
 
 # create new anaconda env
 conda create -n ridcp python=3.8
-source activate ridcp 
+conda activate ridcp 
 
 # install python dependencies
 pip install -r requirements.txt
