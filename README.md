@@ -120,7 +120,7 @@ datasets
 pretrained_models
     |- pretrained_HQPs.pth
     |- pretrained_RIDCP.pth
-    |- CHM_weight.pth
+    |- weight_for_matching_dehazing_Flickr.pth
 ```
 ### Quick demo
 Run demos to process the images in dir `./examples/` by following commands:
